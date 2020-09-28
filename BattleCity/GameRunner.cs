@@ -1,15 +1,36 @@
+using BattleCity.MapControl;
+using BattleCity.Options;
+using System;
+using System.Threading;
+
 namespace BattleCity
 {
     public class GameRunner
     {
-        public void Run(){
-            var player = new Player();
-            player.AddComponent<PlayerNuts>();
-            var playerNuts = player.GetComponent<PlayerNuts>();
+        private readonly WindowOptions _windowOptions;
+        private readonly MapController _mapController;
 
-            player.Update();
-            playerNuts.Update();
-            playerNuts.gameObject.Update();
+        public GameRunner(WindowOptions windowOptions, MapController mapController)
+        {
+            _windowOptions = windowOptions;
+            _mapController = mapController;
+        }
+
+        public void Run(){
+
+            SetupConsole();
+
+            while (true)
+            {
+                Thread.Sleep(1000);
+                _mapController.Act();
+            }
+        }
+
+        private void SetupConsole()
+        {
+            Console.WriteLine(Console.LargestWindowHeight + " " + Console.LargestWindowWidth);
+            Console.SetWindowSize(_windowOptions.Width, _windowOptions.Height);
         }
     }
 }
