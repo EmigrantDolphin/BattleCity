@@ -9,6 +9,9 @@ namespace BattleCity.Entities
         public Player()
         {
             Color = ConsoleColor.Green;
+            Position.CurX = 5;
+            Position.CurY = 5;
+            Direction = MovingDirection.Stationary;
         }
 
         public override void Move()
@@ -53,6 +56,10 @@ namespace BattleCity.Entities
                     break;
                 case MovingDirection.Down:
                     Position.CurY++;
+                    break;
+                case MovingDirection.Stationary:
+                    Position.CurX = Position.CurX;
+                    Position.CurY = Position.CurY;
                     break;
             }
         }

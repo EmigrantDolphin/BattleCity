@@ -1,9 +1,12 @@
 ﻿using BattleCity.DataStructures;
 using BattleCity.Entities;
 using BattleCity.Entities.Abstract;
+using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
+using BattleCity.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BattleCity.MapControl
@@ -25,11 +28,18 @@ namespace BattleCity.MapControl
 
         public void Act()
         {
-            MoveMoveables();
-            DrawMap();
+            Movement();
+            RedrawMap();
         }
 
-        private void DrawMap()
+        private void Movement()
+        {
+            var moveables = GetMoveables();
+            moveables.ForEach(m => m.Move());
+            ValidateCollision(moveables);
+        }
+        
+        private void RedrawMap()
         {
             Console.SetCursorPosition(0, 0);
 
@@ -46,28 +56,42 @@ namespace BattleCity.MapControl
             }
         }
 
-        private void MoveMoveables()
+        private List<IMoveable> GetMoveables() => _map.GetMapPoints().Where(mp => mp.Entity is IMoveable).Select(mp => mp.Entity as IMoveable).ToList();
+
+
+        private void ValidateCollision(List<IMoveable> tanks)
         {
-            foreach(var mapLine in _map)
+            bool isOutOfBounds(IMoveable movable) =>
+                movable.Position.CurX >= _map[0].Count ||
+                movable.Position.CurX < 0 ||
+                movable.Position.CurY >= _map.Count ||
+                movable.Position.CurY < 0;
+
+            bool isColliding(IMoveable movable) => !(_map[movable.Position.CurY][movable.Position.CurX].Entity is Empty);
+
+            bool isStationary(IMoveable movable) => movable.Direction == MovingDirection.Stationary;
+
+            foreach (var tank in tanks)
             {
-                foreach(var mapPoint in mapLine)
+                if (isStationary(tank))
                 {
-                    if (mapPoint.Entity != null && mapPoint.Entity is IMovable)
-                    {
-                        var movable = mapPoint.Entity as IMovable;
-                        movable.Move();
-                        var player = mapPoint.Entity as Player;
-                        //todo: sync player position with map position somehow 
-                        _map[player.Position.CurX][player.Position.CurY].Char = mapPoint.Char;
-                        _map[player.Position.CurX][player.Position.CurY].Entity = mapPoint.Entity;
-                    }
+                    continue;
+                }
+
+                if ( isOutOfBounds(tank) || isColliding(tank))
+                {
+                    tank.MoveToPreviousPosition();
+                }
+                else
+                {
+                    var swap = _map[tank.Position.CurY][tank.Position.CurX];
+                    var debug1 = _map[tank.Position.CurY][tank.Position.CurX];
+                    var debug3 = _map[tank.Position.PrevY][tank.Position.PrevX];
+                    _map[tank.Position.CurY][tank.Position.CurX] = _map[tank.Position.PrevY][tank.Position.PrevX];
+                    var debug2 = _map[tank.Position.CurY][tank.Position.CurX];
+                    _map[tank.Position.PrevY][tank.Position.PrevX] = swap;
                 }
             }
-        }
-
-        private void ValidateTankPosition(List<Tank> tanks)
-        {
-
         }
     }
 }

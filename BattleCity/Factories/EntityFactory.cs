@@ -10,8 +10,7 @@ namespace BattleCity.Factories
             return ch switch
             {
                 'P' => new Player(),
-                '.' => new Entity(),
-                _ => null
+                _ => new Empty()
             };
         }
     }
