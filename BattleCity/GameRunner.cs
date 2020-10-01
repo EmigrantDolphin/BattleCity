@@ -29,6 +29,7 @@ namespace BattleCity
 
         private void SetupConsole()
         {
+            Console.CursorVisible = false;
             Console.WriteLine(Console.LargestWindowHeight + " " + Console.LargestWindowWidth);
             Console.SetWindowSize(_windowOptions.Width, _windowOptions.Height);
         }
