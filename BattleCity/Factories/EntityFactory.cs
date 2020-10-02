@@ -10,6 +10,9 @@ namespace BattleCity.Factories
             return ch switch
             {
                 'P' => new Player(),
+                'E' => new Enemy(),
+                'B' => new DestroyableWall(),
+                '#' => new Border(),
                 _ => new Empty()
             };
         }

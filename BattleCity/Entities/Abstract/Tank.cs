@@ -1,6 +1,7 @@
 ﻿using BattleCity.DataStructures;
 using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
+using System;
 
 namespace BattleCity.Entities.Abstract
 {
@@ -11,10 +12,9 @@ namespace BattleCity.Entities.Abstract
 
         public abstract void Move();
 
-        public void MoveToPreviousPosition()
+        public virtual void MoveToPreviousPosition()
         {
-            Position.CurX = Position.PrevX;
-            Position.CurY = Position.PrevY;
+            Position.MoveToPrevious();
         }
 
         public void DealDamage(int damage) 

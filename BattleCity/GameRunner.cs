@@ -22,7 +22,7 @@ namespace BattleCity
 
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
                 _mapController.Act();
             }
         }

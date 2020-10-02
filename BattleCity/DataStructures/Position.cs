@@ -12,6 +12,7 @@
             set 
             {
                 PrevX = _curX;
+                PrevY = _curY;
                 _curX = value;
             } 
         }
@@ -24,10 +25,16 @@
             set
             {
                 PrevY = _curY;
+                PrevX = _curX;
                 _curY = value;
             }
         }
         public int PrevX { get; private set; }
         public int PrevY { get; private set; }
+        public void MoveToPrevious()
+        {
+            _curX = PrevX;
+            _curY = PrevY;
+        }
     }
 }

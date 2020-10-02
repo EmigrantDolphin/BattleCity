@@ -78,7 +78,7 @@ namespace BattleCity.MapControl
                     continue;
                 }
 
-                if ( isOutOfBounds(tank) || isColliding(tank))
+                if ( isOutOfBounds(tank) || isColliding(tank) )
                 {
                     tank.MoveToPreviousPosition();
                 }

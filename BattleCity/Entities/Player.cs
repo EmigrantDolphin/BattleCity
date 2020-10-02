@@ -57,10 +57,6 @@ namespace BattleCity.Entities
                 case MovingDirection.Down:
                     Position.CurY++;
                     break;
-                case MovingDirection.Stationary:
-                    Position.CurX = Position.CurX;
-                    Position.CurY = Position.CurY;
-                    break;
             }
         }
     }
