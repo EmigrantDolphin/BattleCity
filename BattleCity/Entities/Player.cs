@@ -1,16 +1,20 @@
-﻿using BattleCity.Entities.Abstract;
+﻿using BattleCity.DataStructures;
+using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
+using BattleCity.MapControl;
 using System;
 
 namespace BattleCity.Entities
 {
     public class Player : Tank
     {
+        private Bullet _bullet;
         public Player()
         {
             Color = ConsoleColor.Green;
             Position.CurX = 5;
             Position.CurY = 5;
+            Health = 1;
             Direction = MovingDirection.Stationary;
         }
 
@@ -19,6 +23,47 @@ namespace BattleCity.Entities
             ChangeDirection();
             MoveInDirection();
             Console.WriteLine(Position.CurX + " " + Position.CurY);
+        }
+
+        public override void InstantiationAction(IMapController mapController)
+        {
+            var wasSpacePressed = Input.GetKeyDown(ConsoleKey.Spacebar);
+
+            if (wasSpacePressed && _bullet == null)
+            {
+                SpawnBullet(mapController);
+            }
+            else if (wasSpacePressed && _bullet.IsDead())
+            {
+                SpawnBullet(mapController);
+            }
+        }
+
+        private void SpawnBullet(IMapController mapController)
+        {
+            _bullet = new Bullet(Direction, 1, this);
+            _bullet.Position = Position.Clone();
+            switch (Direction)
+            {
+                case MovingDirection.Up:
+                    _bullet.Position.CurY--;
+                    break;
+                case MovingDirection.Down:
+                    _bullet.Position.CurY++;
+                    break;
+                case MovingDirection.Left:
+                    _bullet.Position.CurX--;
+                    break;
+                case MovingDirection.Right:
+                    _bullet.Position.CurX++;
+                    break;
+            }
+            var charr = 'o';
+            var wasSpawned = mapController.Spawn(_bullet, charr);
+            if (!wasSpawned)
+            {
+                _bullet = null;
+            }
         }
 
         private void ChangeDirection()

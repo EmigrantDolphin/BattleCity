@@ -9,7 +9,12 @@ namespace BattleCity
         private static ConsoleKey _lastKeyPressed;
         public static bool GetKeyDown(ConsoleKey input)
         {
-            return input == _lastKeyPressed;
+            if (input == _lastKeyPressed)
+            {
+                _lastKeyPressed = ConsoleKey.F13;
+                return true;
+            }
+            return false;
         }
 
         public Task StartLoop()

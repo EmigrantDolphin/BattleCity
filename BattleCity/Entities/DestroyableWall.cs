@@ -9,7 +9,7 @@ namespace BattleCity.Entities
 
         public void DealDamage(int damage)
         {
-            Health--;
+            Health -= damage;
         }
 
         public bool IsDead() => Health <= 0;

@@ -5,13 +5,20 @@ namespace BattleCity.Entities.Abstract
 {
     public abstract class Projectile : Entity, IMoveable, IDestroyable, IDamager
     {
+        protected IDestroyable OriginEntity { get; set; }
         protected int Health { get; set; }
         protected int Damage { get; set; }
         public MovingDirection Direction { get; set; }
 
         public void DamageDestroyable(IDestroyable destroyable)
         {
+            if (OriginEntity != null && destroyable == OriginEntity)
+            {
+                return;
+            }
+
             destroyable.DealDamage(Damage);
+            Health = 0;
         }
 
         public void DealDamage(int damage) => Health -= damage;
@@ -22,8 +29,7 @@ namespace BattleCity.Entities.Abstract
 
         public void MoveToPreviousPosition()
         {
-            //todo: get rid of this method from IMoveable
-            throw new System.NotImplementedException();
+            Health = 0;
         }
     }
 }

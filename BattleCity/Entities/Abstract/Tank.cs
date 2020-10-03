@@ -1,16 +1,17 @@
 ﻿using BattleCity.DataStructures;
 using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
-using System;
+using BattleCity.MapControl;
 
 namespace BattleCity.Entities.Abstract
 {
-    public abstract class Tank : Entity, IMoveable, IDestroyable
+    public abstract class Tank : Entity, IMoveable, IDestroyable, IInstantiator
     {
-        public int Health { get; private set; }
+        public int Health { get; protected set; }
         public MovingDirection Direction { get; set; }
 
         public abstract void Move();
+        public abstract void InstantiationAction(IMapController mapController);
 
         public virtual void MoveToPreviousPosition()
         {

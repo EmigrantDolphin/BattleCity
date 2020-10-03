@@ -1,4 +1,6 @@
-﻿namespace BattleCity.DataStructures
+﻿using System;
+
+namespace BattleCity.DataStructures
 {
     public class Position
     {
@@ -31,6 +33,18 @@
         }
         public int PrevX { get; private set; }
         public int PrevY { get; private set; }
+
+        public Position Clone()
+        {
+            return new Position
+            {
+                _curX = _curX,
+                _curY = _curY,
+                PrevX = PrevX,
+                PrevY = PrevY
+            };
+        }
+
         public void MoveToPrevious()
         {
             _curX = PrevX;

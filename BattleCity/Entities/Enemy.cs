@@ -1,5 +1,6 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
+using BattleCity.MapControl;
 using System;
 using System.Linq;
 
@@ -47,6 +48,11 @@ namespace BattleCity.Entities
             var random = new Random();
             var randomIndex = random.Next(0, possibleDirections.Count);
             Direction = possibleDirections[randomIndex];
+        }
+
+        public override void InstantiationAction(IMapController mapController)
+        {
+            //todo:
         }
     }
 }

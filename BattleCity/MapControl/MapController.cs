@@ -7,7 +7,6 @@ using BattleCity.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BattleCity.MapControl
 {
@@ -15,6 +14,7 @@ namespace BattleCity.MapControl
     public interface IMapController
     {
         public void Act();
+        public bool Spawn(Entity entity, char charr);
     }
 
     public class MapController : IMapController
@@ -28,8 +28,34 @@ namespace BattleCity.MapControl
 
         public void Act()
         {
+            Instantiate();
             Movement();
+            CleanDead();
             RedrawMap();
+        }
+
+        private void CleanDead()
+        {
+            var dead = _map.GetMapPoints().Where(p => p.Entity is IDestroyable && (p.Entity as IDestroyable).IsDead()).ToList();
+            foreach(var point in dead)
+            {
+                point.Entity = new Empty();
+                point.Char = '.';
+            }
+        }
+
+        public bool Spawn(Entity entity, char charr)
+        {
+            //todo: validate
+            var mapPoint = _map[entity.Position.CurY][entity.Position.CurX];
+
+            if (mapPoint.Entity is Empty)
+            {
+                _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
+                return true;
+            }
+
+            return false;
         }
 
         private void Movement()
@@ -56,10 +82,16 @@ namespace BattleCity.MapControl
             }
         }
 
+        private void Instantiate()
+        {
+            var instantiators = GetInstantiators();
+            instantiators.ForEach(i => i.InstantiationAction(this));
+        }
+
+        private List<IInstantiator> GetInstantiators() => _map.GetMapPoints().Where(mp => mp.Entity is IInstantiator).Select(mp => mp.Entity as IInstantiator).ToList();
         private List<IMoveable> GetMoveables() => _map.GetMapPoints().Where(mp => mp.Entity is IMoveable).Select(mp => mp.Entity as IMoveable).ToList();
 
-
-        private void ValidateCollision(List<IMoveable> tanks)
+        private void ValidateCollision(List<IMoveable> movables)
         {
             bool isOutOfBounds(IMoveable movable) =>
                 movable.Position.CurX >= _map[0].Count ||
@@ -71,25 +103,40 @@ namespace BattleCity.MapControl
 
             bool isStationary(IMoveable movable) => movable.Direction == MovingDirection.Stationary;
 
-            foreach (var tank in tanks)
+            foreach (var movable in movables)
             {
-                if (isStationary(tank))
+                if (isStationary(movable))
                 {
                     continue;
                 }
 
-                if ( isOutOfBounds(tank) || isColliding(tank) )
+                if ( isOutOfBounds(movable) )
                 {
-                    tank.MoveToPreviousPosition();
+                    movable.MoveToPreviousPosition();
+                }
+                else if ( isColliding(movable) )
+                {
+                    var collidedWith = _map[movable.Position.CurY][movable.Position.CurX];
+
+                    if (collidedWith.Entity is IDestroyable && movable is IDamager)
+                    {
+                        (movable as IDamager).DamageDestroyable(collidedWith.Entity as IDestroyable);
+                    }
+                    else if (movable is IDestroyable && collidedWith.Entity is IDamager)
+                    {
+                        (collidedWith.Entity as IDamager).DamageDestroyable(movable as IDestroyable);
+                    }
+                    else
+                    {
+                        //todo: this is bad logic. This is not called when a friendly bullet hits a friendly tank. 
+                        movable.MoveToPreviousPosition();
+                    }
                 }
                 else
                 {
-                    var swap = _map[tank.Position.CurY][tank.Position.CurX];
-                    var debug1 = _map[tank.Position.CurY][tank.Position.CurX];
-                    var debug3 = _map[tank.Position.PrevY][tank.Position.PrevX];
-                    _map[tank.Position.CurY][tank.Position.CurX] = _map[tank.Position.PrevY][tank.Position.PrevX];
-                    var debug2 = _map[tank.Position.CurY][tank.Position.CurX];
-                    _map[tank.Position.PrevY][tank.Position.PrevX] = swap;
+                    var swap = _map[movable.Position.CurY][movable.Position.CurX];
+                    _map[movable.Position.CurY][movable.Position.CurX] = _map[movable.Position.PrevY][movable.Position.PrevX];
+                    _map[movable.Position.PrevY][movable.Position.PrevX] = swap;
                 }
             }
         }

@@ -1,14 +1,17 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
+using BattleCity.Entities.Interfaces;
 
 namespace BattleCity.Entities
 {
     public class Bullet : Projectile
     {
-        public Bullet(MovingDirection direction, int damage)
+        public Bullet(MovingDirection direction, int damage, IDestroyable originEntity)
         {
             Damage = damage;
+            OriginEntity = originEntity;
             Direction = direction;
+            Health = 1;
         }
 
         public override void Move()
