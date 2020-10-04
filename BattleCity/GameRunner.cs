@@ -1,5 +1,5 @@
-using BattleCity.MapControl;
 using BattleCity.Options;
+using BattleCity.SceneManagement;
 using System;
 using System.Threading;
 
@@ -8,12 +8,12 @@ namespace BattleCity
     public class GameRunner
     {
         private readonly WindowOptions _windowOptions;
-        private readonly MapController _mapController;
+        private readonly ISceneManager _sceneManager;
 
-        public GameRunner(WindowOptions windowOptions, MapController mapController)
+        public GameRunner(WindowOptions windowOptions, ISceneManager sceneManager)
         {
             _windowOptions = windowOptions;
-            _mapController = mapController;
+            _sceneManager = sceneManager;
         }
 
         public void Run(){
@@ -23,14 +23,13 @@ namespace BattleCity
             while (true)
             {
                 Thread.Sleep(100);
-                _mapController.Act();
+                _sceneManager.GetScene().Act();
             }
         }
 
         private void SetupConsole()
         {
             Console.CursorVisible = false;
-            Console.WriteLine(Console.LargestWindowHeight + " " + Console.LargestWindowWidth);
             Console.SetWindowSize(_windowOptions.Width, _windowOptions.Height);
         }
     }

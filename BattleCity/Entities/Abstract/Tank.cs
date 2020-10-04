@@ -7,7 +7,7 @@ namespace BattleCity.Entities.Abstract
 {
     public abstract class Tank : Entity, IMoveable, IDestroyable, IInstantiator
     {
-        public int Health { get; protected set; }
+        public int Health { get; protected set; } = 1;
         public MovingDirection Direction { get; set; }
 
         public abstract void Move();

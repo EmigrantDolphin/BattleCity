@@ -1,8 +1,10 @@
 ﻿using BattleCity.MapControl;
 using BattleCity.Options;
+using BattleCity.SceneManagement;
+using BattleCity.SceneManagement.Scenes;
+using BattleCity.SceneManagement.Scenes.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -30,8 +32,12 @@ namespace BattleCity
 
 
             services.AddTransient<GameRunner>();
-            services.AddTransient<MapRetriever>();
-            services.AddTransient<MapController>();
+            services.AddTransient<IMapRetriever, MapRetriever>();
+
+            services.AddTransient<ISceneManager, SceneManager>();
+            services.AddTransient<IScene, GameScene>();
+            services.AddTransient<IScene, LostScene>();
+            services.AddTransient<IScene, WonScene>();
 
             return services;
         }

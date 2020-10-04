@@ -13,6 +13,7 @@ namespace BattleCity.Factories
                 'E' => new Enemy(),
                 'B' => new DestroyableWall(),
                 '#' => new Border(),
+                'L' => new Life(),
                 _ => new Empty()
             };
         }

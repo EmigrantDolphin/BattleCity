@@ -2,14 +2,17 @@
 using BattleCity.Extensions;
 using BattleCity.Factories;
 using BattleCity.Options;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace BattleCity.MapControl
 {
-    public class MapRetriever
+    public interface IMapRetriever
+    {
+        public List<List<Map>> ReadMainMap();
+    }
+
+    public class MapRetriever : IMapRetriever
     {
         private readonly MapOptions _mapOptions;
 

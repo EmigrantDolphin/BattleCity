@@ -14,7 +14,6 @@ namespace BattleCity.Entities
             Color = ConsoleColor.Green;
             Position.CurX = 5;
             Position.CurY = 5;
-            Health = 1;
             Direction = MovingDirection.Stationary;
         }
 
@@ -29,11 +28,7 @@ namespace BattleCity.Entities
         {
             var wasSpacePressed = Input.GetKeyDown(ConsoleKey.Spacebar);
 
-            if (wasSpacePressed && _bullet == null)
-            {
-                SpawnBullet(mapController);
-            }
-            else if (wasSpacePressed && _bullet.IsDead())
+            if (wasSpacePressed && (_bullet == null || _bullet.IsDead()))
             {
                 SpawnBullet(mapController);
             }

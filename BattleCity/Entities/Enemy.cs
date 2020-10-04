@@ -8,6 +8,8 @@ namespace BattleCity.Entities
 {
     public class Enemy : Tank
     {
+        private Bullet _bullet;
+
         public Enemy()
         {
             Color = ConsoleColor.Red;
@@ -52,7 +54,38 @@ namespace BattleCity.Entities
 
         public override void InstantiationAction(IMapController mapController)
         {
-            //todo:
+            if (_bullet == null || _bullet.IsDead())
+            {
+                SpawnBullet(mapController);
+            }
         }
+
+        private void SpawnBullet(IMapController mapController)
+        {
+            _bullet = new Bullet(Direction, 1, this);
+            _bullet.Position = Position.Clone();
+            switch (Direction)
+            {
+                case MovingDirection.Up:
+                    _bullet.Position.CurY--;
+                    break;
+                case MovingDirection.Down:
+                    _bullet.Position.CurY++;
+                    break;
+                case MovingDirection.Left:
+                    _bullet.Position.CurX--;
+                    break;
+                case MovingDirection.Right:
+                    _bullet.Position.CurX++;
+                    break;
+            }
+            var charr = 'o';
+            var wasSpawned = mapController.Spawn(_bullet, charr);
+            if (!wasSpawned)
+            {
+                _bullet = null;
+            }
+        }
+
     }
 }

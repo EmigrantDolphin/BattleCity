@@ -17,6 +17,15 @@ namespace BattleCity
             return false;
         }
 
+        public static void WaitForKeyDown(ConsoleKey input)
+        {
+            while (input != _lastKeyPressed)
+            {
+                Thread.Sleep(20);
+            }
+            _lastKeyPressed = ConsoleKey.F13;
+        }
+
         public Task StartLoop()
         {
             while (true)

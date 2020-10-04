@@ -21,7 +21,7 @@ namespace BattleCity.MapControl
     {
         private readonly List<List<Map>> _map;
 
-        public MapController(MapRetriever mapRetriever)
+        public MapController(IMapRetriever mapRetriever)
         {
             _map = mapRetriever.ReadMainMap();
         }
@@ -53,6 +53,11 @@ namespace BattleCity.MapControl
             {
                 _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
                 return true;
+            }
+            else if (entity is IDamager && mapPoint.Entity is IDestroyable)
+            {
+                (entity as IDamager).DamageDestroyable(mapPoint.Entity as IDestroyable);
+                CleanDead();
             }
 
             return false;
@@ -122,13 +127,8 @@ namespace BattleCity.MapControl
                     {
                         (movable as IDamager).DamageDestroyable(collidedWith.Entity as IDestroyable);
                     }
-                    else if (movable is IDestroyable && collidedWith.Entity is IDamager)
-                    {
-                        (collidedWith.Entity as IDamager).DamageDestroyable(movable as IDestroyable);
-                    }
                     else
                     {
-                        //todo: this is bad logic. This is not called when a friendly bullet hits a friendly tank. 
                         movable.MoveToPreviousPosition();
                     }
                 }
