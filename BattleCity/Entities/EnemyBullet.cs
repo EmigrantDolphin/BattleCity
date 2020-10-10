@@ -1,17 +1,24 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
+using System;
 
 namespace BattleCity.Entities
 {
-    public class Bullet : Projectile
+    public class EnemyBullet : Projectile
     {
-        public Bullet(MovingDirection direction, int damage, IDestroyable originEntity)
+        public EnemyBullet(MovingDirection direction, int damage, IDestroyable originEntity)
         {
             Damage = damage;
+            Color = ConsoleColor.Red;
             OriginEntity = originEntity;
             Direction = direction;
             Health = 1;
+        }
+
+        public override bool IsTargetImmune(IDestroyable target)
+        {
+            return target is Enemy;
         }
 
         public override void Move()

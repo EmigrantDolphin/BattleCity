@@ -1,6 +1,7 @@
 ﻿using BattleCity.MapControl;
 using BattleCity.Options;
 using BattleCity.SceneManagement;
+using BattleCity.SceneManagement.Conditions;
 using BattleCity.SceneManagement.Scenes;
 using BattleCity.SceneManagement.Scenes.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,10 @@ namespace BattleCity
             services.AddTransient<IScene, GameScene>();
             services.AddTransient<IScene, LostScene>();
             services.AddTransient<IScene, WonScene>();
+
+            services.AddTransient<ICondition, PlayerDeadCondition>();
+            services.AddTransient<ICondition, LifeDeadCondition>();
+            services.AddTransient<ICondition, EnemiesDeadCondition>();
 
             return services;
         }

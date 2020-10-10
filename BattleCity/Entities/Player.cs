@@ -8,7 +8,7 @@ namespace BattleCity.Entities
 {
     public class Player : Tank
     {
-        private Bullet _bullet;
+        private PlayerBullet _bullet;
         public Player()
         {
             Color = ConsoleColor.Green;
@@ -21,7 +21,6 @@ namespace BattleCity.Entities
         {
             ChangeDirection();
             MoveInDirection();
-            Console.WriteLine(Position.CurX + " " + Position.CurY);
         }
 
         public override void InstantiationAction(IMapController mapController)
@@ -36,7 +35,7 @@ namespace BattleCity.Entities
 
         private void SpawnBullet(IMapController mapController)
         {
-            _bullet = new Bullet(Direction, 1, this);
+            _bullet = new PlayerBullet(Direction, 1, this);
             _bullet.Position = Position.Clone();
             switch (Direction)
             {

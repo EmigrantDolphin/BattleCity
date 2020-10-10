@@ -1,5 +1,6 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Interfaces;
+using System;
 
 namespace BattleCity.Entities
 {

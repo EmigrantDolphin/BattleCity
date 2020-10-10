@@ -1,5 +1,7 @@
 ﻿using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace BattleCity.Entities.Abstract
 {
@@ -31,5 +33,7 @@ namespace BattleCity.Entities.Abstract
         {
             Health = 0;
         }
+
+        public abstract bool IsTargetImmune(IDestroyable target);
     }
 }

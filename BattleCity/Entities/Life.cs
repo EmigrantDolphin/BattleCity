@@ -1,17 +1,23 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Interfaces;
-using BattleCity.SceneManagement;
-using BattleCity.SceneManagement.Enums;
+using System;
 
 namespace BattleCity.Entities
 {
     public class Life : Entity, IDestroyable
     {
-        public void DealDamage(int damage)
+        private bool _isDead = false;
+
+        public Life()
         {
-            SceneManager.CurrentScene = Scene.LostScene;
+            Color = ConsoleColor.Yellow;
         }
 
-        public bool IsDead() => false;
+        public void DealDamage(int damage)
+        {
+            _isDead = true;
+        }
+
+        public bool IsDead() => _isDead;
     }
 }

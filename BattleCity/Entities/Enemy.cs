@@ -8,7 +8,7 @@ namespace BattleCity.Entities
 {
     public class Enemy : Tank
     {
-        private Bullet _bullet;
+        private EnemyBullet _bullet;
 
         public Enemy()
         {
@@ -62,7 +62,7 @@ namespace BattleCity.Entities
 
         private void SpawnBullet(IMapController mapController)
         {
-            _bullet = new Bullet(Direction, 1, this);
+            _bullet = new EnemyBullet(Direction, 1, this);
             _bullet.Position = Position.Clone();
             switch (Direction)
             {

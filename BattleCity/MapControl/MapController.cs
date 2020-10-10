@@ -4,6 +4,7 @@ using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
 using BattleCity.Extensions;
+using BattleCity.SceneManagement.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,12 @@ namespace BattleCity.MapControl
     public class MapController : IMapController
     {
         private readonly List<List<Map>> _map;
+        private readonly IEnumerable<ICondition> _conditions;
 
-        public MapController(IMapRetriever mapRetriever)
+        public MapController(IMapRetriever mapRetriever, IEnumerable<ICondition> conditions)
         {
             _map = mapRetriever.ReadMainMap();
+            _conditions = conditions;
         }
 
         public void Act()
@@ -31,7 +34,16 @@ namespace BattleCity.MapControl
             Instantiate();
             Movement();
             CleanDead();
+            CheckAndActConditions();
             RedrawMap();
+        }
+
+        private void CheckAndActConditions()
+        {
+            foreach(var condition in _conditions)
+            {
+                condition.CheckAndAct(_map);
+            }
         }
 
         private void CleanDead()
@@ -54,7 +66,7 @@ namespace BattleCity.MapControl
                 _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
                 return true;
             }
-            else if (entity is IDamager && mapPoint.Entity is IDestroyable)
+            else if (entity is IDamager && mapPoint.Entity is IDestroyable && !(entity as IDamager).IsTargetImmune(mapPoint.Entity as IDestroyable))
             {
                 (entity as IDamager).DamageDestroyable(mapPoint.Entity as IDestroyable);
                 CleanDead();
@@ -123,7 +135,7 @@ namespace BattleCity.MapControl
                 {
                     var collidedWith = _map[movable.Position.CurY][movable.Position.CurX];
 
-                    if (collidedWith.Entity is IDestroyable && movable is IDamager)
+                    if (collidedWith.Entity is IDestroyable && movable is IDamager && !(movable as IDamager).IsTargetImmune(collidedWith.Entity as IDestroyable))
                     {
                         (movable as IDamager).DamageDestroyable(collidedWith.Entity as IDestroyable);
                     }
