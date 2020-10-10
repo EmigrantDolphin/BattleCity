@@ -3,6 +3,7 @@ using BattleCity.Entities;
 using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Interfaces;
 using BattleCity.Extensions;
+using BattleCity.Factories;
 using BattleCity.MapControl.Components;
 using BattleCity.SceneManagement.Conditions;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace BattleCity.MapControl
     public interface IMapController
     {
         public void Act();
-        public bool Spawn(Entity entity, char charr);
+        public bool Spawn(Entity entity);
     }
 
     public class MapController : IMapController
@@ -37,13 +38,14 @@ namespace BattleCity.MapControl
             MapRedrawer.Redraw(_map);
         }
 
-        public bool Spawn(Entity entity, char charr)
+        public bool Spawn(Entity entity)
         {
             var mapPoint = _map[entity.Position.CurY][entity.Position.CurX];
 
             if (mapPoint.Entity is Empty)
             {
-                _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
+                var newMapPoint = new MapFactory().GetWithEntity(entity);
+                _map[entity.Position.CurY][entity.Position.CurX] = newMapPoint;
                 return true;
             }
             else if (CanDestroy(entity, mapPoint.Entity))

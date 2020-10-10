@@ -52,6 +52,7 @@ namespace BattleCity.MapControl
         private void PopulateMap(List<List<Map>> map, List<List<char>> charMap)
         {
             var entityFactory = new EntityFactory();
+            var mapFactory = new MapFactory();
 
             for (int y = 0; y < charMap.Count; y++)
             {
@@ -59,9 +60,10 @@ namespace BattleCity.MapControl
                 {
                     var character = charMap[y][x];
                     var entity = entityFactory.GetEntity(character);
+                    var mapPoint = mapFactory.GetWithEntity(entity);
                     entity.Position.CurX = x;
                     entity.Position.CurY = y;
-                    map[y][x] = new Map() { Char = character, Entity = entity };
+                    map[y][x] = mapPoint;
                 }
             }
         }

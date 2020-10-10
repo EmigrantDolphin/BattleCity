@@ -52,8 +52,7 @@ namespace BattleCity.Entities
             _bullet = new EnemyBullet(Direction, 1, this);
             _bullet.Position = Position.Clone();
             DirectionalMovement.Move(Direction, _bullet.Position);
-            var visual = 'o';
-            var wasSpawned = mapController.Spawn(_bullet, visual);
+            var wasSpawned = mapController.Spawn(_bullet);
             if (!wasSpawned)
             {
                 _bullet = null;
