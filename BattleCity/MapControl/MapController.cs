@@ -68,8 +68,9 @@ namespace BattleCity.MapControl
             var dead = _map.GetMapPoints().Where(p => p.Entity is IDestroyable && (p.Entity as IDestroyable).IsDead()).ToList();
             foreach(var point in dead)
             {
-                point.Entity = new Empty();
-                point.Char = '.';
+                var emptyMap = new MapFactory().GetWithEntity(new Empty());
+                point.Entity = emptyMap.Entity;
+                point.Char = emptyMap.Char;
             }
         }
 
