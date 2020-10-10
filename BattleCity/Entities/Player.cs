@@ -1,6 +1,7 @@
 ﻿using BattleCity.DataStructures;
 using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
+using BattleCity.Entities.Scripts;
 using BattleCity.MapControl;
 using System;
 
@@ -12,15 +13,13 @@ namespace BattleCity.Entities
         public Player()
         {
             Color = ConsoleColor.Green;
-            Position.CurX = 5;
-            Position.CurY = 5;
             Direction = MovingDirection.Stationary;
         }
 
         public override void Move()
         {
             ChangeDirection();
-            MoveInDirection();
+            DirectionalMovement.Move(Direction, Position);
         }
 
         public override void InstantiationAction(IMapController mapController)
@@ -37,21 +36,7 @@ namespace BattleCity.Entities
         {
             _bullet = new PlayerBullet(Direction, 1, this);
             _bullet.Position = Position.Clone();
-            switch (Direction)
-            {
-                case MovingDirection.Up:
-                    _bullet.Position.CurY--;
-                    break;
-                case MovingDirection.Down:
-                    _bullet.Position.CurY++;
-                    break;
-                case MovingDirection.Left:
-                    _bullet.Position.CurX--;
-                    break;
-                case MovingDirection.Right:
-                    _bullet.Position.CurX++;
-                    break;
-            }
+            DirectionalMovement.Move(Direction, _bullet.Position);
             var charr = 'o';
             var wasSpawned = mapController.Spawn(_bullet, charr);
             if (!wasSpawned)
@@ -77,25 +62,6 @@ namespace BattleCity.Entities
             else if (Input.GetKeyDown(ConsoleKey.S))
             {
                 Direction = MovingDirection.Down;
-            }
-        }
-
-        private void MoveInDirection()
-        {
-            switch (Direction)
-            {
-                case MovingDirection.Left:
-                    Position.CurX--;
-                    break;
-                case MovingDirection.Right:
-                    Position.CurX++;
-                    break;
-                case MovingDirection.Up:
-                    Position.CurY--;
-                    break;
-                case MovingDirection.Down:
-                    Position.CurY++;
-                    break;
             }
         }
     }

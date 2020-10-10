@@ -4,6 +4,7 @@ using BattleCity.Factories;
 using BattleCity.Options;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BattleCity.MapControl
 {
@@ -29,7 +30,7 @@ namespace BattleCity.MapControl
             var map = new List<List<Map>>();
             var charMap = streamReader.ReadAllLinesOfCharacters();
 
-            CreateEmptyMap(map, charMap[0].Count, charMap.Count);
+            CreateEmptyMap(map, charMap.First().Count, charMap.Count);
             PopulateMap(map, charMap);
 
             return map;

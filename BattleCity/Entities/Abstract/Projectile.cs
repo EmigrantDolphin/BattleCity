@@ -1,7 +1,5 @@
 ﻿using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
-using System;
-using System.Collections.Generic;
 
 namespace BattleCity.Entities.Abstract
 {
@@ -11,6 +9,9 @@ namespace BattleCity.Entities.Abstract
         protected int Health { get; set; }
         protected int Damage { get; set; }
         public MovingDirection Direction { get; set; }
+
+        public abstract void Move();
+        public abstract bool IsTargetImmune(IDestroyable target);
 
         public void DamageDestroyable(IDestroyable destroyable)
         {
@@ -27,13 +28,10 @@ namespace BattleCity.Entities.Abstract
 
         public bool IsDead() => Health <= 0;
 
-        public abstract void Move();
-
         public void MoveToPreviousPosition()
         {
             Health = 0;
         }
 
-        public abstract bool IsTargetImmune(IDestroyable target);
     }
 }

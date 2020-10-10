@@ -1,11 +1,10 @@
 ﻿using BattleCity.DataStructures;
 using BattleCity.Entities;
 using BattleCity.Entities.Abstract;
-using BattleCity.Entities.Enums;
 using BattleCity.Entities.Interfaces;
 using BattleCity.Extensions;
+using BattleCity.MapControl.Components;
 using BattleCity.SceneManagement.Conditions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,18 +31,34 @@ namespace BattleCity.MapControl
         public void Act()
         {
             Instantiate();
-            Movement();
+            MapMover.Move(_map);
             CleanDead();
             CheckAndActConditions();
-            RedrawMap();
+            MapRedrawer.Redraw(_map);
         }
 
-        private void CheckAndActConditions()
+        public bool Spawn(Entity entity, char charr)
         {
-            foreach(var condition in _conditions)
+            var mapPoint = _map[entity.Position.CurY][entity.Position.CurX];
+
+            if (mapPoint.Entity is Empty)
             {
-                condition.CheckAndAct(_map);
+                _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
+                return true;
             }
+            else if (CanDestroy(entity, mapPoint.Entity))
+            {
+                (entity as IDamager).DamageDestroyable(mapPoint.Entity as IDestroyable);
+                CleanDead();
+            }
+
+            return false;
+        }
+
+        private void Instantiate()
+        {
+            var instantiators = _map.GetMapPoints().Where(mp => mp.Entity is IInstantiator).Select(mp => mp.Entity as IInstantiator).ToList();
+            instantiators.ForEach(i => i.InstantiationAction(this));
         }
 
         private void CleanDead()
@@ -56,101 +71,15 @@ namespace BattleCity.MapControl
             }
         }
 
-        public bool Spawn(Entity entity, char charr)
+        private void CheckAndActConditions()
         {
-            //todo: validate
-            var mapPoint = _map[entity.Position.CurY][entity.Position.CurX];
-
-            if (mapPoint.Entity is Empty)
+            foreach(var condition in _conditions)
             {
-                _map[entity.Position.CurY][entity.Position.CurX] = new Map { Entity = entity, Char = charr };
-                return true;
-            }
-            else if (entity is IDamager && mapPoint.Entity is IDestroyable && !(entity as IDamager).IsTargetImmune(mapPoint.Entity as IDestroyable))
-            {
-                (entity as IDamager).DamageDestroyable(mapPoint.Entity as IDestroyable);
-                CleanDead();
-            }
-
-            return false;
-        }
-
-        private void Movement()
-        {
-            var moveables = GetMoveables();
-            moveables.ForEach(m => m.Move());
-            ValidateCollision(moveables);
-        }
-        
-        private void RedrawMap()
-        {
-            Console.SetCursorPosition(0, 0);
-
-            foreach(var mapLine in _map)
-            {
-                foreach(var map in mapLine)
-                {
-                    var cacheColor = Console.ForegroundColor;
-                    Console.ForegroundColor = map.Entity == null ? ConsoleColor.White : map.Entity.Color;
-                    Console.Write(map.Char);
-                    Console.ForegroundColor = cacheColor;
-                }
-                Console.WriteLine();
+                condition.CheckAndAct(_map);
             }
         }
 
-        private void Instantiate()
-        {
-            var instantiators = GetInstantiators();
-            instantiators.ForEach(i => i.InstantiationAction(this));
-        }
-
-        private List<IInstantiator> GetInstantiators() => _map.GetMapPoints().Where(mp => mp.Entity is IInstantiator).Select(mp => mp.Entity as IInstantiator).ToList();
-        private List<IMoveable> GetMoveables() => _map.GetMapPoints().Where(mp => mp.Entity is IMoveable).Select(mp => mp.Entity as IMoveable).ToList();
-
-        private void ValidateCollision(List<IMoveable> movables)
-        {
-            bool isOutOfBounds(IMoveable movable) =>
-                movable.Position.CurX >= _map[0].Count ||
-                movable.Position.CurX < 0 ||
-                movable.Position.CurY >= _map.Count ||
-                movable.Position.CurY < 0;
-
-            bool isColliding(IMoveable movable) => !(_map[movable.Position.CurY][movable.Position.CurX].Entity is Empty);
-
-            bool isStationary(IMoveable movable) => movable.Direction == MovingDirection.Stationary;
-
-            foreach (var movable in movables)
-            {
-                if (isStationary(movable))
-                {
-                    continue;
-                }
-
-                if ( isOutOfBounds(movable) )
-                {
-                    movable.MoveToPreviousPosition();
-                }
-                else if ( isColliding(movable) )
-                {
-                    var collidedWith = _map[movable.Position.CurY][movable.Position.CurX];
-
-                    if (collidedWith.Entity is IDestroyable && movable is IDamager && !(movable as IDamager).IsTargetImmune(collidedWith.Entity as IDestroyable))
-                    {
-                        (movable as IDamager).DamageDestroyable(collidedWith.Entity as IDestroyable);
-                    }
-                    else
-                    {
-                        movable.MoveToPreviousPosition();
-                    }
-                }
-                else
-                {
-                    var swap = _map[movable.Position.CurY][movable.Position.CurX];
-                    _map[movable.Position.CurY][movable.Position.CurX] = _map[movable.Position.PrevY][movable.Position.PrevX];
-                    _map[movable.Position.PrevY][movable.Position.PrevX] = swap;
-                }
-            }
-        }
+        private bool CanDestroy(Entity damager, Entity destroyable) =>
+            destroyable is IDestroyable && damager is IDamager && !(damager as IDamager).IsTargetImmune(destroyable as IDestroyable);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BattleCity.Entities.Abstract;
 using BattleCity.Entities.Enums;
+using BattleCity.Entities.Scripts;
 using BattleCity.MapControl;
 using System;
 using System.Linq;
@@ -24,21 +25,7 @@ namespace BattleCity.Entities
 
         public override void Move()
         {
-            switch (Direction)
-            {
-                case MovingDirection.Left:
-                    Position.CurX--;
-                    break;
-                case MovingDirection.Right:
-                    Position.CurX++;
-                    break;
-                case MovingDirection.Up:
-                    Position.CurY--;
-                    break;
-                case MovingDirection.Down:
-                    Position.CurY++;
-                    break;
-            }
+            DirectionalMovement.Move(Direction, Position);
         }
 
         private void PickNewDirection()
@@ -64,23 +51,9 @@ namespace BattleCity.Entities
         {
             _bullet = new EnemyBullet(Direction, 1, this);
             _bullet.Position = Position.Clone();
-            switch (Direction)
-            {
-                case MovingDirection.Up:
-                    _bullet.Position.CurY--;
-                    break;
-                case MovingDirection.Down:
-                    _bullet.Position.CurY++;
-                    break;
-                case MovingDirection.Left:
-                    _bullet.Position.CurX--;
-                    break;
-                case MovingDirection.Right:
-                    _bullet.Position.CurX++;
-                    break;
-            }
-            var charr = 'o';
-            var wasSpawned = mapController.Spawn(_bullet, charr);
+            DirectionalMovement.Move(Direction, _bullet.Position);
+            var visual = 'o';
+            var wasSpawned = mapController.Spawn(_bullet, visual);
             if (!wasSpawned)
             {
                 _bullet = null;
